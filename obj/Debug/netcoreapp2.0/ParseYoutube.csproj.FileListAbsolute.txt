@@ -1,0 +1,11 @@
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\obj\Debug\netcoreapp2.0\ParseYoutube.csprojResolveAssemblyReference.cache
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\obj\Debug\netcoreapp2.0\ParseYoutube.csproj.CoreCompileInputs.cache
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\obj\Debug\netcoreapp2.0\ParseYoutube.AssemblyInfoInputs.cache
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\obj\Debug\netcoreapp2.0\ParseYoutube.AssemblyInfo.cs
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\bin\Debug\netcoreapp2.0\ParseYoutube.deps.json
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\bin\Debug\netcoreapp2.0\ParseYoutube.runtimeconfig.json
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\bin\Debug\netcoreapp2.0\ParseYoutube.runtimeconfig.dev.json
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\bin\Debug\netcoreapp2.0\ParseYoutube.dll
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\bin\Debug\netcoreapp2.0\ParseYoutube.pdb
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\obj\Debug\netcoreapp2.0\ParseYoutube.dll
+C:\Users\Fyodor Rychkov\source\repos\ParseYoutube\ParseYoutube\obj\Debug\netcoreapp2.0\ParseYoutube.pdb
