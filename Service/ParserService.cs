@@ -5,6 +5,7 @@ using Models.ParseYoutube;
 using ParseYoutube.Service;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace Service.ParseYoutube
@@ -13,9 +14,13 @@ namespace Service.ParseYoutube
     {
         public const string apiKey = "AIzaSyDIj8I0bg1V8FsqO8nKcKc8vEvjJFkOJEc";
 
-        private readonly string[] PositiveMarkers = { "молодцы", "так держать", "лучший", "крым наш", "мир", "дружба", "красавчик", "отлично", "хороший", "не вор", "добро" };
-        private readonly string[] NegativeMarkers = { "бандит", "вор", "мошенник", "взяточник", "хохлы", "москали", "москаль", "хохол", "говносми", "ватный", "диванный" };
-        private readonly string searchQuestion = "Обещания Путина";
+        //private readonly string[] PositiveMarkers = { "молодцы", "так держать", "лучший", "крым наш", "мир", "дружба", "красавчик", "отлично", "хороший", "не вор", "добро" };
+        //private readonly string[] NegativeMarkers = { "бандит", "вор", "мошенник", "взяточник", "хохлы", "москали", "москаль", "хохол", "говносми", "ватный", "диванный" };
+        private readonly string[] PositiveMarkers = { "Well done", "keep it up", "best", "our Crimea", "world", "friendship", "handsome", "excellent", "good", "not a thief", "good" };
+        private readonly string[] NegativeMarkers = { "bandit", "thief", "swindler", "bribe taker", "khokhly", "moskali", "moskal", "khokhol", "govnosmi", "wadded", " " };
+
+        private readonly string searchQuestion = "Donald Trump";
+        //private readonly DateTime from = new DateTime(16.04.2015 0:47:43);
 
         public void ExportCommentToCsvFile()
         {
@@ -32,6 +37,11 @@ namespace Service.ParseYoutube
             /** Get Results **/
             var searchListResponse = searchListRequest.Execute();
             var videos = new List<VideoModel>();
+            //            DateTime dateFrom = DateTime.ParseExact("01.01.2014 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+            //           DateTime dateTo = DateTime.ParseExact("30.11.2016 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+
+            DateTime dateFrom = DateTime.ParseExact("30.11.2016 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+            DateTime dateTo = DateTime.ParseExact("25.03.2018 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
             foreach (var searchResult in searchListResponse.Items)
             {
                 if (searchResult.Id.Kind != "youtube#video")
@@ -40,56 +50,62 @@ namespace Service.ParseYoutube
                 }
 
                 var singleVideo = new VideoModel();
+
+                Console.WriteLine(searchResult.Snippet.PublishedAt > dateFrom && searchResult.Snippet.PublishedAt < dateTo);
+
                 var videoInfo = VideosListById(youtubeService, "statistics", searchResult.Id.VideoId, singleVideo);
-                if (videoInfo.Statistics.CommentCount == 0)
+                if (videoInfo.Statistics.CommentCount == 0 )
                 {
                     continue;
                 }
 
-                singleVideo.VideoTitle = searchResult.Snippet.Title;
-                singleVideo.VideoId = searchResult.Id.VideoId;
-                singleVideo.PublishedAt = searchResult.Snippet.PublishedAt;
-                singleVideo.DislikeCount = videoInfo.Statistics.DislikeCount.ToString();
-                singleVideo.LikeCount = videoInfo.Statistics.LikeCount.ToString();
-                singleVideo.VideoViews = videoInfo.Statistics.ViewCount.ToString();
-                singleVideo.CommentsCount = videoInfo.Statistics.CommentCount;               
-
-                int negativeCounter = 0;
-                int positiveCounter = 0;
-                var comments = CommentThreadsListByVideoID(youtubeService, "snippet,replies", singleVideo.VideoId, 100);
-                if (comments == null)
+                if (searchResult.Snippet.PublishedAt > dateFrom && searchResult.Snippet.PublishedAt < dateTo)
                 {
-                    continue;
-                }
+                    singleVideo.VideoTitle = searchResult.Snippet.Title;
+                    singleVideo.VideoId = searchResult.Id.VideoId;
+                    singleVideo.PublishedAt = searchResult.Snippet.PublishedAt;
+                    singleVideo.DislikeCount = videoInfo.Statistics.DislikeCount.ToString();
+                    singleVideo.LikeCount = videoInfo.Statistics.LikeCount.ToString();
+                    singleVideo.VideoViews = videoInfo.Statistics.ViewCount.ToString();
+                    singleVideo.CommentsCount = videoInfo.Statistics.CommentCount;
 
-                List<string> comment = new List<string>();
-                foreach (var commentRes in comments.Items)
-                {
-                    if (commentRes.Snippet.TopLevelComment.Snippet.TextDisplay.Length > 20 && commentRes.Snippet.TopLevelComment.Snippet.TextDisplay.Length < 150)
+                    int negativeCounter = 0;
+                    int positiveCounter = 0;
+                    var comments = CommentThreadsListByVideoID(youtubeService, "snippet,replies", singleVideo.VideoId, 100);
+                    if (comments == null)
                     {
-                        comment.Add(commentRes.Snippet.TopLevelComment.Snippet.TextDisplay);
-                        var str = commentRes.Snippet.TopLevelComment.Snippet.TextDisplay;
-                        for (var i = 0; i < PositiveMarkers.Length; i++)
-                        {
-                            if (str.Contains(PositiveMarkers[i]))
-                            {
-                                positiveCounter++;
-                            }
-                            if (str.Contains(NegativeMarkers[i]))
-                            {
-                                negativeCounter++;
-                            }
-                        }
-                        singleVideo.NegativeCount = negativeCounter;
-                        singleVideo.PositiveCount = positiveCounter;
+                        continue;
                     }
-                    singleVideo.Comments = comment;
+
+                    List<string> comment = new List<string>();
+                    foreach (var commentRes in comments.Items)
+                    {
+                        if (commentRes.Snippet.TopLevelComment.Snippet.TextDisplay.Length > 20 && commentRes.Snippet.TopLevelComment.Snippet.TextDisplay.Length < 150)
+                        {
+                            comment.Add(commentRes.Snippet.TopLevelComment.Snippet.TextDisplay);
+                            var str = commentRes.Snippet.TopLevelComment.Snippet.TextDisplay;
+                            for (var i = 0; i < PositiveMarkers.Length; i++)
+                            {
+                                if (str.Contains(PositiveMarkers[i]))
+                                {
+                                    positiveCounter++;
+                                }
+                                if (str.Contains(NegativeMarkers[i]))
+                                {
+                                    negativeCounter++;
+                                }
+                            }
+                            singleVideo.NegativeCount = negativeCounter;
+                            singleVideo.PositiveCount = positiveCounter;
+                        }
+                        singleVideo.Comments = comment;
+                    }
+
+                    var resultStr = $"({singleVideo.VideoId}) {singleVideo.VideoTitle} | ViewsCount: {singleVideo.VideoViews } | CommentsCount: {singleVideo.CommentsCount} | PositiveComment: {singleVideo.PositiveCount} | NegativeComment: {singleVideo.NegativeCount}";
+
+                    Console.WriteLine(resultStr);
+                    videos.Add(singleVideo);
                 }
-
-                var resultStr = $"({singleVideo.VideoId}) {singleVideo.VideoTitle} | ViewsCount: {singleVideo.VideoViews } | CommentsCount: {singleVideo.CommentsCount} | PositiveComment: {singleVideo.PositiveCount} | NegativeComment: {singleVideo.NegativeCount}";
-
-                Console.WriteLine(resultStr);
-                videos.Add(singleVideo);
             }
 
             WrtiteToCSV(videos, searchListRequest.Q);
