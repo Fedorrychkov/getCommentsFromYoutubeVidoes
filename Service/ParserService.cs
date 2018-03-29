@@ -14,12 +14,12 @@ namespace Service.ParseYoutube
     {
         public const string apiKey = "AIzaSyDIj8I0bg1V8FsqO8nKcKc8vEvjJFkOJEc";
 
-        //private readonly string[] PositiveMarkers = { "молодцы", "так держать", "лучший", "крым наш", "мир", "дружба", "красавчик", "отлично", "хороший", "не вор", "добро" };
-        //private readonly string[] NegativeMarkers = { "бандит", "вор", "мошенник", "взяточник", "хохлы", "москали", "москаль", "хохол", "говносми", "ватный", "диванный" };
-        private readonly string[] PositiveMarkers = { "Well done", "keep it up", "best", "our Crimea", "world", "friendship", "handsome", "excellent", "good", "not a thief", "good" };
-        private readonly string[] NegativeMarkers = { "bandit", "thief", "swindler", "bribe taker", "khokhly", "moskali", "moskal", "khokhol", "govnosmi", "wadded", " " };
+        private readonly string[] PositiveMarkers = { "молодцы", "так держать", "лучший", "крым наш", "мир", "дружба", "красавчик", "отлично", "хороший", "не вор", "добро" };
+        private readonly string[] NegativeMarkers = { "бандит", "вор", "мошенник", "взяточник", "хохлы", "москали", "москаль", "хохол", "говносми", "ватный", "диванный" };
+        //private readonly string[] PositiveMarkers = { "Well done", "keep it up", "best", "our Crimea", "world", "friendship", "handsome", "excellent", "good", "not a thief", "good" };
+        //private readonly string[] NegativeMarkers = { "bandit", "thief", "swindler", "bribe taker", "khokhly", "moskali", "moskal", "khokhol", "govnosmi", "wadded", " " };
 
-        private readonly string searchQuestion = "Donald Trump";
+        private readonly string searchQuestion = "Путин";
         //private readonly DateTime from = new DateTime(16.04.2015 0:47:43);
 
         public void ExportCommentToCsvFile()
@@ -40,8 +40,8 @@ namespace Service.ParseYoutube
             //            DateTime dateFrom = DateTime.ParseExact("01.01.2014 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
             //           DateTime dateTo = DateTime.ParseExact("30.11.2016 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
 
-            DateTime dateFrom = DateTime.ParseExact("30.11.2016 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
-            DateTime dateTo = DateTime.ParseExact("25.03.2018 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+            DateTime dateFrom = DateTime.ParseExact("30.11.2010 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+            DateTime dateTo = DateTime.ParseExact("29.03.2018 00:00:00", "dd.MM.yyyy HH:mm:ss", CultureInfo.InvariantCulture);
             foreach (var searchResult in searchListResponse.Items)
             {
                 if (searchResult.Id.Kind != "youtube#video")
@@ -59,8 +59,8 @@ namespace Service.ParseYoutube
                     continue;
                 }
 
-                if (searchResult.Snippet.PublishedAt > dateFrom && searchResult.Snippet.PublishedAt < dateTo)
-                {
+                //if (searchResult.Snippet.PublishedAt > dateFrom && searchResult.Snippet.PublishedAt < dateTo)
+                //{
                     singleVideo.VideoTitle = searchResult.Snippet.Title;
                     singleVideo.VideoId = searchResult.Id.VideoId;
                     singleVideo.PublishedAt = searchResult.Snippet.PublishedAt;
@@ -106,7 +106,7 @@ namespace Service.ParseYoutube
                     Console.WriteLine(resultStr);
                     videos.Add(singleVideo);
                 }
-            }
+            //}
 
             WrtiteToCSV(videos, searchListRequest.Q);
         }
@@ -146,7 +146,7 @@ namespace Service.ParseYoutube
         {
             Console.WriteLine("We in WriteToCSV function");
             var sw = new StreamWriter(fileName + ".csv", false);
-            sw.WriteLine("id видео;Название видео;Публикация видео;Просмотров;Лайков;Дизлайков;Положительных комментариев (всего);Негативных комментариев (всего);Комментарий");
+            sw.WriteLine("id видео;Название видео;Публикация видео;Просмотров;Лайков;Дизлайков;Всего комментариев;Положительных комментариев (всего);Негативных комментариев (всего);Комментарий");
             int index = 0;
             foreach (var item in Videos)
             {
@@ -154,15 +154,16 @@ namespace Service.ParseYoutube
                 {
                     continue;
                 }
-                foreach (var comment in item.Comments)
-                {
+                //foreach (var comment in item.Comments)
+                //{
                     index++;
                     Console.WriteLine("items:" + index);
                     //if (item != null && comment != null)
                     //{
                     try
                     {
-                        sw.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}", item.VideoId, item.VideoTitle, item.PublishedAt, item.VideoViews, item.LikeCount, item.DislikeCount, item.PositiveCount, item.NegativeCount, comment));
+                        sw.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}", item.VideoId, item.VideoTitle, item.PublishedAt, item.VideoViews, item.LikeCount, item.DislikeCount, item.CommentsCount, item.PositiveCount, item.NegativeCount));
+                        //sw.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}", item.VideoId, item.VideoTitle, item.PublishedAt, item.VideoViews, item.LikeCount, item.DislikeCount, item.CommentsCount, item.PositiveCount, item.NegativeCount, comment));
                         //Console.WriteLine(string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8}", item.VideoId, item.VideoTitle, item.PublishedAt, item.VideoViews, item.LikeCount, item.DislikeCount, item.PositiveCount, item.NegativeCount, comment));
                     }
                     catch (IOException ex)
@@ -171,7 +172,7 @@ namespace Service.ParseYoutube
                         continue;
                     }
                     //}
-                }
+                //}
             }
             sw.Close();
 
